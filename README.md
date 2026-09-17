@@ -25,6 +25,7 @@ Vibe Coding 指南 —— WorkBuddy × Codex 双平台技能装备库。
 vibecoding/
 ├── index.html           # 网页版工作台（单文件，离线可用）
 ├── vibecoding-guide.md  # Markdown 完整指南
+├── ADD-SKILL.md         # 新增技能 · 数据刷新流程（后续加 skill 照此操作）
 └── README.md
 ```
 
@@ -35,4 +36,4 @@ vibecoding/
 ## 更新记录
 
 - 2026-09-17：初版指南 + 网页工作台，开启 GitHub Pages。
-- 2026-09-17：编外补充 [Karpathy 四原则](https://github.com/multica-ai/andrej-karpathy-skills)——编码前思考 / 简洁优先 / 精准修改 / 目标驱动执行，更少的 diff、更精简的代码，更省 token。
+- 2026-09-17：新增「节省token的skill」分组 [Karpathy 四原则](https://github.com/multica-ai/andrej-karpathy-skills)——编码前思考 / 简洁优先 / 精准修改 / 目标驱动执行，更少的 diff、更精简的代码，更省 token。Codex 计为第 16 个技能。

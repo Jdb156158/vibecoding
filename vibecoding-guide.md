@@ -301,7 +301,7 @@ $skill-installer 看看有哪些技能
 | 13 | playwright | 硬核补充 | 终端自动化真实浏览器 | 官方精选 `$skill-installer playwright` |
 | 14 | cangjie-skill | 压轴 | 书/视频方法论蒸馏成技能包 | [kangarooking/cangjie-skill](https://github.com/kangarooking/cangjie-skill) |
 | 15 | last30days | 压轴 | 近 30 天跨平台真实讨论简报 | [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill) |
-| +1 | andrej-karpathy-skills | 编外补充 | Karpathy 四原则：思考/简洁/精准/目标驱动，更省 token | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) |
+| 16 | andrej-karpathy-skills | 节省token的skill | Karpathy 四原则：思考/简洁/精准/目标驱动，更省 token | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) |
 
 ---
 
