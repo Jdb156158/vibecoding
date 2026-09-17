@@ -7,11 +7,6 @@ Vibe Coding 指南 —— WorkBuddy × Codex 双平台技能装备库。
 
 ## 内容
 
-整理自程序员小灰（[@XiaohuiAI666](https://x.com/XiaohuiAI666)）两篇推文：
-
-- [WorkBuddy 最值得推荐的 15 个技能（9 月最新版）](https://x.com/XiaohuiAI666/status/2099856276046180473)
-- [Codex 最推荐的 15 个 skill，每一个都值得收藏！](https://x.com/XiaohuiAI666/status/2095130302381494664)
-
 | 章节 | 说明 |
 |---|---|
 | 什么是 Vibe Coding | 用自然语言指挥 AI 编程：描述 → 生成 → 测试 → 反馈 |

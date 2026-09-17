@@ -1,9 +1,5 @@
 # Vibe Coding 指南：WorkBuddy 与 Codex 双平台技能实战
 
-> 本指南整理自程序员小灰（@XiaohuiAI666）的两篇 X 长文：
-> - [WorkBuddy 最值得推荐的 15 个技能（9 月最新版）](https://x.com/XiaohuiAI666/status/2099856276046180473)
-> - [Codex 最推荐的 15 个 skill，每一个都值得收藏！](https://x.com/XiaohuiAI666/status/2095130302381494664)
-
 ---
 
 ## 目录
@@ -348,10 +344,3 @@ ln -s ~/.codex/skills/my-tdd-skill ~/.claude/skills/my-tdd-skill
 | 5 | **Demo 陷阱** | 从演示逻辑到真实产品要补六件事：接 CMS、接表单/支付、接数据、补边界（空态/错误提示）、查响应式、做性能优化。原型验证用 Vibe Coding 很爽，核心业务系统上生产前必须严谨。 |
 | 6 | **代码能跑但不知道为什么能跑** | 安全、边界条件、错误处理 AI 不主动替你考虑；高风险系统（资金/隐私/核心业务）不适用「一句话生成」。 |
 | 7 | **跨平台复用零成本** | SKILL.md 标准通用，技能文件夹复制或软链接即可在 Claude Code / Codex / WorkBuddy / Cursor 之间迁移。 |
-
----
-
-## 附：来源
-
-- 程序员小灰（@XiaohuiAI666），《WorkBuddy 最值得推荐的 15 个技能（9 月最新版）》：https://x.com/XiaohuiAI666/status/2099856276046180473
-- 程序员小灰（@XiaohuiAI666），《Codex 最推荐的 15 个 skill，每一个都值得收藏！》：https://x.com/XiaohuiAI666/status/2095130302381494664
