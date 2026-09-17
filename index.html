@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Coding 工作台 · WorkBuddy × Codex</title>
+<style>
+:root {
+  --paper: #f6f1ea;
+  --paper-deep: #efe8de;
+  --surface: #fdfbf7;
+  --ink: #2e2622;
+  --ink-soft: #6b5f57;
+  --ink-faint: #9a8d83;
+  --line: #e4dacd;
+  --accent: hsl(292, 42%, 40%);
+  --accent-deep: hsl(292, 45%, 30%);
+  --accent-wash: hsl(292, 45%, 95%);
+  --terra: hsl(24, 55%, 45%);
+  --terra-wash: hsl(26, 60%, 95%);
+  --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sidebar-w: 288px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.75;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: hsl(292, 45%, 88%); }
+
+/* ============ 布局骨架 ============ */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+/* ============ 侧边栏 ============ */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 28px 22px 20px;
+  border-right: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(253, 251, 247, 0.82), rgba(253, 251, 247, 0.55)),
+    var(--paper);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 6px 18px;
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 18px;
+}
+.brand-mark {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.brand-sub {
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: 2px;
+}
+
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-wrap svg {
+  position: absolute; left: 11px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  stroke: var(--ink-faint);
+}
+#search {
+  width: 100%;
+  padding: 9px 12px 9px 32px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 13.5px;
+  font-family: var(--sans);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+#search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-wash);
+}
+#search::placeholder { color: var(--ink-faint); }
+
+.filter-row { display: flex; gap: 6px; margin-bottom: 20px; }
+.chip {
+  flex: 1;
+  padding: 6px 0;
+  text-align: center;
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.25s var(--ease);
+  user-select: none;
+}
+.chip:hover { border-color: var(--ink-faint); }
+.chip.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.nav-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--ink-faint);
+  padding: 0 6px 8px;
+}
+.nav a {
+  display: block;
+  padding: 6px 12px;
+  margin: 1px 0;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  border-radius: 8px;
+  border-left: 2px solid transparent;
+  transition: all 0.2s var(--ease);
+}
+.nav a:hover { color: var(--ink); background: rgba(253, 251, 247, 0.9); }
+.nav a.active {
+  color: var(--accent-deep);
+  font-weight: 600;
+  background: var(--accent-wash);
+  border-left-color: var(--accent);
+}
+.nav a .num {
+  display: inline-block;
+  width: 22px;
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+.nav a.active .num { color: var(--accent); }
+
+.side-foot {
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.9;
+}
+.side-foot a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
+.side-foot a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ============ 主内容 ============ */
+.main { padding: 52px clamp(28px, 5vw, 72px) 90px; max-width: 980px; }
+
+.hero { margin-bottom: 64px; }
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--terra);
+  margin-bottom: 18px;
+}
+.hero-kicker::before {
+  content: "";
+  width: 26px; height: 1px;
+  background: var(--terra);
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(34px, 4.5vw, 50px);
+  font-weight: 900;
+  line-height: 1.22;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+.hero p {
+  max-width: 620px;
+  color: var(--ink-soft);
+  font-size: 15.5px;
+}
+.hero-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.stat b {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat span { font-size: 12.5px; color: var(--ink-soft); }
+
+section { margin-bottom: 72px; scroll-margin-top: 24px; }
+.sec-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.sec-no {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+h2 {
+  font-family: var(--serif);
+  font-size: clamp(23px, 2.6vw, 29px);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+.sec-lead { color: var(--ink-soft); margin-bottom: 26px; max-width: 640px; }
+
+h3.group-title {
+  font-family: var(--serif);
+  font-size: 18.5px;
+  font-weight: 700;
+  margin: 40px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h3.group-title .gtag {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.gtag.wb { background: var(--accent-wash); color: var(--accent-deep); }
+.gtag.cx { background: var(--terra-wash); color: var(--terra); }
+.group-lead { font-size: 13.5px; color: var(--ink-faint); margin-bottom: 18px; }
+
+/* 正文排版 */
+.prose p { margin-bottom: 14px; max-width: 680px; }
+.prose strong { color: var(--ink); }
+.prose .hl { color: var(--accent-deep); font-weight: 600; }
+.quote {
+  margin: 20px 0;
+  padding: 16px 22px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 12px 12px 0;
+  font-family: var(--serif);
+  font-size: 15.5px;
+  color: var(--ink);
+}
+ul.plain { margin: 0 0 14px 4px; list-style: none; max-width: 680px; }
+ul.plain li { padding-left: 20px; position: relative; margin-bottom: 7px; color: var(--ink-soft); }
+ul.plain li::before {
+  content: "✦";
+  position: absolute; left: 0; top: 0;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+/* 表格 */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  margin: 20px 0;
+}
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { padding: 11px 16px; text-align: left; vertical-align: top; }
+thead th {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-deep);
+  white-space: nowrap;
+}
+tbody tr + tr { border-top: 1px solid var(--line); }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--accent-wash); }
+td a { color: var(--accent-deep); text-decoration: none; border-bottom: 1px dotted; }
+td a:hover { border-bottom-style: solid; }
+td code { font-size: 12px; }
+
+/* ============ 技能卡片 ============ */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px -14px rgba(46, 38, 34, 0.22);
+  border-color: hsl(292, 25%, 78%);
+}
+.card[data-platform="wb"]:hover { border-color: hsl(292, 35%, 72%); }
+.card[data-platform="cx"]:hover { border-color: hsl(24, 45%, 72%); }
+
+.card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.card-no {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--line);
+  min-width: 34px;
+  padding-top: 3px;
+  transition: color 0.3s;
+}
+.card:hover .card-no { color: var(--accent); }
+.card[data-platform="cx"]:hover .card-no { color: var(--terra); }
+
+.card-name { font-family: var(--serif); font-size: 17.5px; font-weight: 700; line-height: 1.35; }
+.card-cn { font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+.card-badges { display: flex; gap: 5px; flex-wrap: wrap; margin: 0 0 10px 46px; }
+.badge {
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  padding: 1.5px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge.plat-wb { background: var(--accent-wash); color: var(--accent-deep); }
+.badge.plat-cx { background: var(--terra-wash); color: var(--terra); }
+.badge.dim { background: var(--paper-deep); color: var(--ink-soft); }
+
+.card-what {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 10px 46px;
+  flex-grow: 1;
+}
+.card-what b { color: var(--ink); }
+
+.card-example {
+  margin: 0 0 12px 46px;
+  padding: 9px 13px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  background: var(--paper-deep);
+  border-radius: 9px;
+  line-height: 1.65;
+}
+.card-example::before {
+  content: "示例";
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
+}
+
+.install {
+  margin-left: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.install-cmd {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  background: #2e2622;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card[data-platform="wb"] .install-cmd { color: hsl(292, 40%, 82%); }
+.card[data-platform="cx"] .install-cmd { color: hsl(26, 55%, 80%); }
+.copy-btn {
+  flex-shrink: 0;
+  width: 33px; height: 33px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.25s var(--ease);
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.copy-btn svg { width: 14px; height: 14px; }
+
+.card-note {
+  margin: 10px 0 0 46px;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+.card-note a { color: var(--ink-soft); }
+
+/* 搜索高亮与空态 */
+mark {
+  background: hsl(292, 70%, 88%);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.empty-state {
+  display: none;
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--ink-faint);
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  font-size: 14px;
+}
+.empty-state.show { display: block; }
+.empty-state .big { font-family: var(--serif); font-size: 20px; color: var(--ink-soft); margin-bottom: 8px; }
+
+/* 代码块 */
+.codeblock {
+  margin: 20px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #3a322d;
+}
+.codeblock .bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #3a322d;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #b5a89d;
+  letter-spacing: 1px;
+}
+.codeblock pre {
+  background: #2e2622;
+  color: #e8ddd2;
+  padding: 16px 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.9;
+  overflow-x: auto;
+}
+.codeblock .bar button {
+  background: none; border: none;
+  color: #b5a89d;
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+.codeblock .bar button:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+/* 双栏路线 */
+.routes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.route {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.route h4 {
+  font-family: var(--serif);
+  font-size: 16.5px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.route .r-sub { font-size: 12px; color: var(--ink-faint); margin-bottom: 14px; }
+.route ol { list-style: none; counter-reset: r; }
+.route ol li {
+  counter-increment: r;
+  position: relative;
+  padding: 7px 0 7px 34px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  border-bottom: 1px dashed var(--line);
+}
+.route ol li:last-child { border-bottom: none; }
+.route ol li::before {
+  content: counter(r, decimal-leading-zero);
+  position: absolute; left: 0; top: 9px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--accent);
+}
+.route.cx ol li::before { color: var(--terra); }
+.route ol li b { color: var(--ink); }
+
+/* 页脚 */
+.footer {
+  border-top: 1px solid var(--line);
+  padding-top: 26px;
+  margin-top: 30px;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+  line-height: 2;
+}
+.footer a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dotted; }
+.footer a:hover { color: var(--accent); }
+
+/* 回顶 */
+.to-top {
+  position: fixed;
+  right: 26px; bottom: 26px;
+  width: 42px; height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink-soft);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: all 0.35s var(--ease);
+  z-index: 50;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { color: var(--accent); border-color: var(--accent); }
+.to-top svg { width: 16px; height: 16px; }
+
+/* 移动端抽屉 */
+.menu-btn {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 60;
+  width: 40px; height: 40px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: rgba(253, 251, 247, 0.9);
+  backdrop-filter: blur(10px);
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink);
+}
+.menu-btn svg { width: 17px; height: 17px; }
+.scrim {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(46, 38, 34, 0.18);
+  z-index: 55;
+}
+
+@media (max-width: 920px) {
+  .app { grid-template-columns: 1fr; }
+  .menu-btn { display: grid; }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: min(300px, 84vw);
+    z-index: 58;
+    transform: translateX(-102%);
+    transition: transform 0.4s var(--ease);
+    box-shadow: none;
+  }
+  body.nav-open .sidebar { transform: none; }
+  body.nav-open .scrim { display: block; }
+  .main { padding-top: 74px; }
+  .routes { grid-template-columns: 1fr; }
+  .card-badges, .card-what, .card-example, .install, .card-note { margin-left: 0; }
+  .card-top { margin-bottom: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="menu-btn" id="menuBtn" aria-label="打开目录">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<div class="app">
+
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">vibecoding</span>
+      <span class="brand-sub">工作台</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="搜索技能 / 用途 / 关键词…" autocomplete="off">
+    </div>
+
+    <div class="filter-row" id="filterRow">
+      <button class="chip active" data-f="all">全部</button>
+      <button class="chip" data-f="wb">WorkBuddy</button>
+      <button class="chip" data-f="cx">Codex</button>
+    </div>
+
+    <div class="nav-label">目 录</div>
+    <nav class="nav" id="nav">
+      <a href="#s1"><span class="num">一</span>什么是 Vibe Coding</a>
+      <a href="#s2"><span class="num">二</span>双平台对比</a>
+      <a href="#s3"><span class="num">三</span>WorkBuddy · 15 技能</a>
+      <a href="#s4"><span class="num">四</span>Codex · 15 Skill</a>
+      <a href="#s5"><span class="num">五</span>方法论：技能是资产</a>
+      <a href="#s6"><span class="num">六</span>上手路线</a>
+      <a href="#s7"><span class="num">七</span>避坑清单</a>
+    </nav>
+
+    <div class="side-foot">
+      整理自 <a href="https://x.com/XiaohuiAI666" target="_blank" rel="noopener">程序员小灰</a> 两篇推文<br>
+      <a href="vibecoding-guide.md">Markdown 完整版</a> · 2026-09
+    </div>
+  </aside>
+
+  <!-- ============ 主内容 ============ -->
+  <main class="main">
+
+    <header class="hero">
+      <div class="hero-kicker">WORKBUDDY × CODEX</div>
+      <h1>Vibe Coding<br>技能<em>装备库</em></h1>
+      <p>用自然语言指挥 AI 编程，你描述想要什么，AI 负责实现。技能（Skill）是能力的放大器——裸的 AI 像两手空空的实习生，装上技能，就是给了他一柜子趁手的工具。</p>
+      <div class="hero-stats">
+        <div class="stat"><b>2</b><span>平台</span></div>
+        <div class="stat"><b>30</b><span>精选技能</span></div>
+        <div class="stat"><b>7</b><span>避坑要点</span></div>
+        <div class="stat"><b>1</b><span>通用标准 SKILL.md</span></div>
+      </div>
+    </header>
+
+    <!-- 一 -->
+    <section id="s1">
+      <div class="sec-head"><span class="sec-no">壹</span><h2>什么是 Vibe Coding</h2></div>
+      <p class="sec-lead">一句话：用嘴写代码。</p>
+      <div class="prose">
+        <p>你不需要懂变量声明、函数调用、数据库连接，只需要<span class="hl">把需求描述清楚</span>。核心闭环是「描述 → 生成 → 测试 → 反馈」：跑通了就过，跑不通就换个说法再试。</p>
+        <ul class="plain">
+          <li>对程序员是<b>提效工具</b>，对非程序员是直接把「原本过不去的坎」铲平；</li>
+          <li>2023–2025 属于大模型，<b>2026 属于 AI 智能体</b>——国内代表 WorkBuddy，国外代表 Codex；</li>
+          <li>两者的核心玩法都是 <b>Skill 生态</b>：一份说明书教 AI 一项新本事。</li>
+        </ul>
+        <div class="quote">工具会一直换，但攒下来的技能库是自己的。</div>
+      </div>
+    </section>
+
+    <!-- 二 -->
+    <section id="s2">
+      <div class="sec-head"><span class="sec-no">贰</span><h2>双平台对比</h2></div>
+      <p class="sec-lead">大卖场与精品店——两种生态哲学。</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>维度</th><th>WorkBuddy</th><th>Codex</th></tr></thead>
+        <tbody>
+          <tr><td>出品方</td><td>腾讯（CodeBuddy Work 更名）</td><td>OpenAI（已并入 ChatGPT 桌面端）</td></tr>
+          <tr><td>目标用户</td><td>普通用户、非技术人群</td><td>开发者、进阶用户</td></tr>
+          <tr><td>技能规模</td><td>7 万+ 社区技能 · 3000 万下载</td><td>官方精选区 39 个，个个能打</td></tr>
+          <tr><td>安装方式</td><td>「帮我安装这个技能：&lt;URL&gt;」</td><td><code>$skill-installer &lt;名&gt;</code></td></tr>
+          <tr><td>存放位置</td><td>技能市场一键安装</td><td><code>~/.codex/skills/</code>（全局）/ 项目级</td></tr>
+          <tr><td>共同点</td><td colspan="2">SKILL.md 是通用标准，Claude Code / Codex / WorkBuddy / Cursor 认同一份文件</td></tr>
+        </tbody>
+      </table></div>
+      <div class="prose">
+        <p><b>Codex 技能机制速览</b>：一个 skill = 一个文件夹（SKILL.md + 可选脚本），启动时预加载名字和描述，干活时自己判断用哪个。装完问一句「你现在有哪些技能」，识别了才算装上。官方目录在 <code>openai/skills</code>。</p>
+      </div>
+    </section>
+
+    <!-- 三 -->
+    <section id="s3">
+      <div class="sec-head"><span class="sec-no">叁</span><h2>WorkBuddy · 15 技能</h2></div>
+      <p class="sec-lead">四大方向：研究与信息处理、学习与知识管理、职场办公与求职、视觉创作与演示设计。安装方式统一：「帮我安装这个技能：&lt;URL&gt;」。</p>
+      <div id="cards-wb"></div>
+    </section>
+
+    <!-- 四 -->
+    <section id="s4">
+      <div class="sec-head"><span class="sec-no">肆</span><h2>Codex · 15 Skill</h2></div>
+      <p class="sec-lead">7 个来自官方精选区，8 个从社区淘来。筛选标准就一条：高频出现，装了确实比裸问 AI 靠谱。</p>
+      <div id="cards-cx"></div>
+    </section>
+
+    <!-- 五 -->
+    <section id="s5">
+      <div class="sec-head"><span class="sec-no">伍</span><h2>方法论：技能是可带走的资产</h2></div>
+      <p class="sec-lead">SKILL.md 是通用标准（agentskills.io），四家工具认的是同一份文件。</p>
+      <div class="codeblock">
+        <div class="bar"><span>bash — 跨平台复用</span><button data-copy>复制</button></div>
+        <pre data-code="# 同一份技能文件夹，两边各放一份
+~/.claude/skills/my-tdd-skill/
+~/.codex/skills/my-tdd-skill/
+
+# 或者做个软链接，一处更新两边生效
+ln -s ~/.codex/skills/my-tdd-skill ~/.claude/skills/my-tdd-skill"></pre>
+      </div>
+      <div class="prose">
+        <p>你在 Codex 里调教好的 <code>tdd</code>，Claude 那边<span class="hl">零成本享用</span>。逛市场的心态是「这平台有什么我用什么」；攒装备的心态是<span class="hl">「我的东西跟着我走」</span>。早期生态乱一点没关系——标准锁死了，资产就不会丢。</p>
+      </div>
+    </section>
+
+    <!-- 六 -->
+    <section id="s6">
+      <div class="sec-head"><span class="sec-no">陆</span><h2>上手路线</h2></div>
+      <p class="sec-lead">两条路径，按你手头的工具选。</p>
+      <div class="routes">
+        <div class="route">
+          <h4>Codex 玩家</h4>
+          <div class="r-sub">先跑通机制，再攒发布链</div>
+          <ol>
+            <li><b>跑通安装流程</b>：用内置三件套熟悉技能机制</li>
+            <li>挑三四个流程技能（推荐 <b>create-plan</b> + <b>stop-slop</b>）</li>
+            <li><b>发布链三件套</b>：gh-fix-ci + gh-address-comments + sentry</li>
+            <li>硬核补充按需：读书装 book-to-skill / 仓颉，前端装 playwright</li>
+            <li><b>last30days 记得带上</b>——不写代码但价值极高</li>
+          </ol>
+        </div>
+        <div class="route cx">
+          <h4>WorkBuddy 玩家</h4>
+          <div class="r-sub">从信息入口到表达输出</div>
+          <ol>
+            <li><b>信息入口</b>：Deep Research + Last 30 Days</li>
+            <li><b>知识沉淀</b>：IMA / Obsidian Skills（按笔记软件二选一）</li>
+            <li><b>办公按需</b>：WPS 操作；求职季用简历助手 / Kami</li>
+            <li><b>表达进阶</b>：幻灯片三选一（Frontend Slides / 归藏 / Bento）</li>
+            <li><b>决策彩蛋</b>：女娲 Skill，名人心智模型分析问题</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 七 -->
+    <section id="s7">
+      <div class="sec-head"><span class="sec-no">柒</span><h2>避坑清单</h2></div>
+      <p class="sec-lead">七条，都是血泪。</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th style="width:48px">#</th><th>坑</th><th>说明与对策</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><b>技能装太多，判断失准</b></td><td>每个技能都消耗上下文窗口，装多了模型选择时判断失准。按需安装，不用的及时关掉。</td></tr>
+          <tr><td>2</td><td><b>装上 ≠ 生效</b></td><td>装完问一句「你现在有哪些技能」，识别了才算装上。</td></tr>
+          <tr><td>3</td><td><b>Vibe Coding ≠ 听天由命</b></td><td>AI 改完直接点确认不叫 Vibe Coding。小步快跑：小功能 → 生成 → 测试 → 报错反馈再改。</td></tr>
+          <tr><td>4</td><td><b>省敲代码时间，不省思考时间</b></td><td>给 AI「问题」而不只是「结果」：给谁用、解决什么、凭什么。描述精度决定产出质量。</td></tr>
+          <tr><td>5</td><td><b>Demo 陷阱</b></td><td>上生产前补六件事：接 CMS、接表单/支付、接数据、补边界、查响应式、做优化。</td></tr>
+          <tr><td>6</td><td><b>能跑但不知为何能跑</b></td><td>安全、边界、错误处理 AI 不主动替你考虑；资金/隐私/核心业务不适用一句话生成。</td></tr>
+          <tr><td>7</td><td><b>跨平台复用零成本</b></td><td>SKILL.md 标准通用，复制或软链接即可在四家工具间迁移。</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="footer">
+        来源：<a href="https://x.com/XiaohuiAI666/status/2099856276046180473" target="_blank" rel="noopener">WorkBuddy 最值得推荐的 15 个技能（9 月版）</a> ·
+        <a href="https://x.com/XiaohuiAI666/status/2095130302381494664" target="_blank" rel="noopener">Codex 最推荐的 15 个 skill</a>
+        &nbsp;—&nbsp; 作者 程序员小灰 @XiaohuiAI666
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button class="to-top" id="toTop" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+/* ============ 技能数据 ============ */
+const W = "wb", C = "cx";
+const SKILLS = [
+  /* --- WorkBuddy 15 --- */
+  {p:W, cat:"研究与信息处理", no:"01", name:"Deep Research", cn:"深度研究",
+   what:"8 步法深度调研：拆问题 → 查资料 → 判来源 → 提事实 → 对比核对 → 产出<b>带引用的调研报告</b>。",
+   ex:"深度调研 2026 年普通人最值得付费的 AI 工具有哪些，给出来源、对比表和最终结论。",
+   cmd:"帮我安装这个技能：https://github.com/wshuyi/deep-research", url:"https://github.com/wshuyi/deep-research"},
+  {p:W, cat:"研究与信息处理", no:"02", name:"Last 30 Days", cn:"近 30 天简报",
+   what:"搜多平台过去 30 天内容，结合点赞、评论等互动数据出近期简报；也可查公司、产品、人物、事件。",
+   ex:"/last30days 最近 30 天 AI Agent 领域最受关注的话题是什么？",
+   cmd:"帮我安装这个技能：https://github.com/mvanhorn/last30days-skill", url:"https://github.com/mvanhorn/last30days-skill"},
+  {p:W, cat:"研究与信息处理", no:"03", name:"Research-to-Diagram", cn:"调研结果画关系图",
+   what:"给一个主题，先整理资料和关系，再生成<b>可视化关系图谱</b>：人物关系、历史事件、知识分类、技术架构。",
+   ex:"深度调研《红楼梦》人物关系，生成关系图谱，并附上参考来源。",
+   cmd:"帮我安装这个技能：https://github.com/wshuyi/research-to-diagram", url:"https://github.com/wshuyi/research-to-diagram"},
+  {p:W, cat:"学习与知识管理", no:"04", name:"IMA 知识库", cn:"腾讯 ima 读写",
+   what:"让 AI 读写你的 ima 笔记和知识库：搜资料、整理笔记、上传文件、加链接、基于知识库生成新内容。",
+   ex:"搜索一份日本关西 5 日游的旅行攻略，存到我的 ima 知识库，并整理成一篇笔记。",
+   cmd:"帮我安装这个技能：https://app-dl.ima.qq.com/skills/ima-skills-1.1.9.zip", url:"",
+   note:"安装后需密钥，在 ima「Claw 配置」里获取"},
+  {p:W, cat:"学习与知识管理", no:"05", name:"Obsidian Skills", cn:"Obsidian 管理",
+   what:"按 Obsidian 规则管理知识库：创建/修改笔记、<b>建双链</b>、数据视图、Canvas 画布、网页内容存档。双链和 Properties 不再写错。",
+   ex:"搜索 Raycast 的最佳实践教程，整理成 Markdown 存到我的 Obsidian，并和已有笔记建立双链。",
+   cmd:"帮我安装这个技能：https://github.com/kepano/obsidian-skills", url:"https://github.com/kepano/obsidian-skills",
+   note:"技能集合，按需开启子技能即可"},
+  {p:W, cat:"职场办公与求职", no:"06", name:"Ego Lite", cn:"浏览器技能",
+   what:"让 WorkBuddy <b>真正使用浏览器</b>：打开网页、点击、填表、提取数据、截图，可用已有登录状态（列表显示 ego-browser）。",
+   ex:"打开黄金价格的行情页面，提取最近 30 天的金价，整理成表格。",
+   cmd:"帮我安装这个技能：https://github.com/citrolabs/ego-lite", url:"https://github.com/citrolabs/ego-lite"},
+  {p:W, cat:"职场办公与求职", no:"07", name:"AI 简历助手", cn:"一页 A4 简历",
+   what:"把零散经历按目标岗位重组，生成一页 A4 简历，多套模板，输出 HTML + PDF（列表显示 html-resume-builder）。",
+   ex:"搜索数学家王虹的公开资料，整理成一页学术简历，突出教育背景、研究方向和主要成就，导出 PDF。",
+   cmd:"帮我安装这个技能：https://github.com/KevinYoung-Kw/vibe-resume-skill", url:"https://github.com/KevinYoung-Kw/vibe-resume-skill"},
+  {p:W, cat:"职场办公与求职", no:"08", name:"Kami 纸张", cn:"正式排版",
+   what:"把 Markdown 排成正式文档：多套设计模板，适合投递、分享、打印，支持中/英/日文，侧重<b>排版与纸张质感</b>。",
+   ex:"搜索数学家王虹的公开资料，整理成一页学术简历，输出 Kami 纸张风格的 PDF。",
+   cmd:"帮我安装这个技能：https://github.com/tw93/kami", url:"https://github.com/tw93/kami",
+   note:"与简历助手的区别：简历助手重内容组织，Kami 重排版质感"},
+  {p:W, cat:"职场办公与求职", no:"09", name:"WPS 操作", cn:"自然语言操作 WPS",
+   what:"用自然语言操作 WPS 文字、表格、演示：格式调整、表格整理、PPT 内容生成、跨应用处理。",
+   ex:"搜索 2025 年国内新能源汽车的月销量数据，整理成 WPS 表格，并生成一页带柱状图的 WPS 演示。",
+   cmd:"帮我安装这个技能：https://github.com/lc2panda/wps-skills", url:"https://github.com/lc2panda/wps-skills"},
+  {p:W, cat:"视觉创作与演示", no:"10", name:"Frontend Slides", cn:"先预览再做",
+   what:"先生成几版不同风格的网页 slides <b>预览</b>，选定方向后再生成单文件 HTML，可继续导出 PDF。",
+   ex:"搜索人工智能发展史的资料，整理成大纲后做成一套网页幻灯片，先给我三个不同风格的预览。",
+   cmd:"帮我安装这个技能：https://github.com/zarazhangrui/frontend-slides", url:"https://github.com/zarazhangrui/frontend-slides"},
+  {p:W, cat:"视觉创作与演示", no:"11", name:"归藏 PPT", cn:"文字变幻灯片",
+   what:"文章/Markdown 直接变网页幻灯片：自动处理版式、配图、封面、横向翻页，输出<b>单 HTML 文件</b>，电子杂志风 / 瑞士风。",
+   ex:"搜索敦煌莫高窟的科普资料，做成电子杂志风的横向网页 PPT，生成单个 HTML 文件。",
+   cmd:"帮我安装这个技能：https://github.com/op7418/guizang-ppt-skill", url:"https://github.com/op7418/guizang-ppt-skill"},
+  {p:W, cat:"视觉创作与演示", no:"12", name:"Excalidraw", cn:"可编辑图表",
+   what:"自然语言生成<b>可继续编辑</b>的 Excalidraw 图：流程图、关系图、思维导图、系统架构图（列表显示 excalidraw-diagram）。",
+   ex:"搜索外卖平台的典型系统架构，用 Excalidraw 画一张架构图，区分前端、后端、数据库和外部服务。",
+   cmd:"帮我安装这个技能：https://github.com/coleam00/excalidraw-diagram-skill", url:"https://github.com/coleam00/excalidraw-diagram-skill"},
+  {p:W, cat:"视觉创作与演示", no:"13", name:"Bento", cn:"单文件幻灯片",
+   what:"一个文件完成幻灯片编辑和演示：浏览器运行、免安装、可编辑可分享可播放（列表显示 bento-slides）。",
+   ex:"搜索解放战争经典战役回顾，整理成大纲，用 Bento 做成一套可以继续修改的单文件幻灯片。",
+   cmd:"帮我安装这个技能：https://github.com/nyblnet/bento", url:"https://github.com/nyblnet/bento"},
+  {p:W, cat:"视觉创作与演示", no:"14", name:"HTML Anything", cn:"75 种模板",
+   what:"内置 <b>75 种专业模板</b>：杂志、演示、海报、社交卡片（小红书封面、推文卡片）。本地运行免 API Key，可一键发布公众号/知乎。",
+   ex:"搜索最近关注度最高的 AI 新闻，做成一份杂志风的图文页面，再生成一张配套的小红书封面卡片。",
+   cmd:"帮我安装这个技能：https://github.com/nexu-io/html-anything", url:"https://github.com/nexu-io/html-anything",
+   note:"技能市场直接搜 html-anything 一键安装"},
+  {p:W, cat:"视觉创作与演示", no:"15", name:"女娲 Skill", cn:"人物思考框架",
+   what:"把人物的心智模型、决策方法整理成可调用视角——<b>不是模仿语气，是用对方的思考方式</b>分析新问题（列表显示 huashu-nuwa）。",
+   ex:"用张雪峰的视角帮我分析：孩子高考报志愿，计算机和临床医学该怎么选？",
+   cmd:"帮我安装这个技能：https://github.com/alchaincyf/nuwa-skill", url:"https://github.com/alchaincyf/nuwa-skill"},
+
+  /* --- Codex 15 --- */
+  {p:C, cat:"官方内置三件套", no:"01", name:"skill-creator", cn:"创建技能的技能",
+   what:"每个 Agent 必备的<b>原始技能</b>——用自然语言把重复工作封装成新技能。随 Codex 自动装好。",
+   ex:"把「每周生成版本日志」的流程封装成一个技能。",
+   cmd:"系统内置 · openai/skills (.system)", url:"https://github.com/openai/skills"},
+  {p:C, cat:"官方内置三件套", no:"02", name:"skill-installer", cn:"装技能的技能",
+   what:"「技能的技能」之二：看货架有什么、一行命令进肚。装完问一句「你现在有哪些技能」验证生效。",
+   ex:"$skill-installer 看看有哪些技能",
+   cmd:"$skill-installer <技能名>", url:"https://github.com/openai/skills"},
+  {p:C, cat:"官方内置三件套", no:"03", name:"plugin-creator", cn:"打包分享给团队",
+   what:"「技能的技能」之三：把自用技能打包成插件分享给团队。OpenAI 没先建货架，先给了你生产工具——<b>攒比买重要</b>。",
+   ex:"把我的 tdd 定制版打包成团队插件。",
+   cmd:"系统内置 · openai/skills (.system)", url:"https://github.com/openai/skills"},
+  {p:C, cat:"开发流程八件套", no:"04", name:"create-plan", cn:"先规划后动手",
+   what:"强制 Codex 在写第一行代码前<b>产出实现计划</b>，治「AI 上来就猛写、写完发现方向错了」。",
+   ex:"（开启后自动生效于每次任务）",
+   cmd:"github.com/composio-community/awesome-codex-skills", url:"https://github.com/composio-community/awesome-codex-skills"},
+  {p:C, cat:"开发流程八件套", no:"05", name:"grill-me", cn:"让 AI 反过来拷问你",
+   what:"你提需求，它<b>连环追问</b>，每个分支聊清楚才放你走。多数人的短板不是 AI 不行，是需求没想清楚。",
+   ex:"我要做一个待办 App。（然后接受连环拷问）",
+   cmd:"github.com/mattpocock/skills", url:"https://github.com/mattpocock/skills"},
+  {p:C, cat:"开发流程八件套", no:"06", name:"gh-fix-ci", cn:"CI 挂了别慌",
+   what:"官方精选：排查并修复 GitHub Actions 上失败的 PR 检查。每周因流水线挂掉浪费的半小时，交给它。",
+   ex:"（检测到 CI 失败时调用）",
+   cmd:"$skill-installer gh-fix-ci", url:"https://github.com/openai/skills", badge:"官方精选"},
+  {p:C, cat:"开发流程八件套", no:"07", name:"gh-address-comments", cn:"PR 评论批量清",
+   what:"官方精选：处理当前分支 PR 的 review 和 issue 评论，能改的直接改，要讨论的汇总成清单。十几条意见一次清完。",
+   ex:"（在待处理评论的 PR 分支上调用）",
+   cmd:"$skill-installer gh-address-comments", url:"https://github.com/openai/skills", badge:"官方精选"},
+  {p:C, cat:"开发流程八件套", no:"08", name:"tdd", cn:"测试先行的老手艺",
+   what:"<b>红绿重构循环</b>：先写失败的测试（红）→ 写实现让它通过（绿）→ 再重构。AI 猛写代码的冲动被测试摁住了。",
+   ex:"用 tdd 流程实现一个日期区间重叠检测函数。",
+   cmd:"github.com/mattpocock/skills", url:"https://github.com/mattpocock/skills"},
+  {p:C, cat:"开发流程八件套", no:"09", name:"diagnosing-bugs", cn:"纪律化调试",
+   what:"治「猜一个原因改一版试试」：先系统定位、收集证据，<b>证据够了才动手</b>。tdd 管 bug 少生，它管 bug 生了怎么治。",
+   ex:"这个偶发的竞态 bug，先收集证据再修。",
+   cmd:"github.com/mattpocock/skills", url:"https://github.com/mattpocock/skills"},
+  {p:C, cat:"开发流程八件套", no:"10", name:"stop-slop", cn:"去 AI 腔",
+   what:"清洗 AI 文本的机翻味：delve、leverage、「此外」「值得注意的是」……README 和提交信息是重灾区。",
+   ex:"把这份 README 的 AI 腔清洗掉。",
+   cmd:"github.com/hardikpandya/stop-slop", url:"https://github.com/hardikpandya/stop-slop"},
+  {p:C, cat:"开发流程八件套", no:"11", name:"sentry", cn:"线上炸了先看这里",
+   what:"官方精选：Sentry CLI 只读查询 issue，把生产错误<b>总结成人话</b>。排障第一步定位工具，已上线的值得装。",
+   ex:"看看过去 24 小时生产环境最严重的错误。",
+   cmd:"$skill-installer sentry", url:"https://github.com/openai/skills", badge:"官方精选"},
+  {p:C, cat:"两个硬核补充", no:"12", name:"book-to-skill", cn:"把书接进 Codex",
+   what:"丢一本 PDF，拆成结构化技能：核心心智模型、每章一文件、速查表。<b>章节按需加载</b>，token 只有塞整本的 1/24–1/51。",
+   ex:"把这本《代码大全》PDF 拆成可查询的技能。",
+   cmd:"npx skills add virgiliojr94/book-to-skill", url:"https://github.com/virgiliojr94/book-to-skill"},
+  {p:C, cat:"两个硬核补充", no:"13", name:"playwright", cn:"浏览器交给 Codex",
+   what:"官方精选：从终端<b>自动化真实浏览器</b>——填表、截图、抓数据；前端改完让它真机验证，抓竞品数据也靠它。",
+   ex:"打开竞品定价页，截图并抓取三档价格。",
+   cmd:"$skill-installer playwright", url:"https://github.com/openai/skills", badge:"官方精选",
+   note:"社区增强版（含响应式检查/登录流程）：github.com/lackeyjb/playwright-skill"},
+  {p:C, cat:"压轴", no:"14", name:"cangjie-skill", cn:"仓颉 · 书变装备",
+   what:"元技能：喂一本书/长视频/播客文字稿，跑流水线把方法论拆成<b>原子化能力卡</b>，编译成可安装技能包。book-to-skill 管读书查询，仓颉管方法论上岗干活。",
+   ex:"蒸馏《穷查理宝典》的决策框架，做成技能。",
+   cmd:"github.com/kangarooking/cangjie-skill", url:"https://github.com/kangarooking/cangjie-skill",
+   note:"9.2k 星 · 中文作者出品"},
+  {p:C, cat:"压轴", no:"15", name:"last30days", cn:"搜索的是人",
+   what:"唯一不写代码的技能：并行搜 Reddit、X、YouTube、Hacker News、Polymarket，按真实互动和真金白银下注排序，合成带引用简报。<b>「Google 聚合的是编辑，last30days 搜索的是人。」</b>",
+   ex:"最近 30 天大家怎么看待 Claude Code 4.6？",
+   cmd:"npx skills add mvanhorn/last30days-skill -g", url:"https://github.com/mvanhorn/last30days-skill"},
+];
+
+/* ============ 渲染 ============ */
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function renderCard(s, q) {
+  const platName = s.p === W ? "WorkBuddy" : "Codex";
+  const badgeHtml = `
+    <span class="badge plat-${s.p}">${platName}</span>
+    <span class="badge dim">${esc(s.cat)}</span>
+    ${s.badge ? `<span class="badge dim">${esc(s.badge)}</span>` : ""}`;
+  let what = s.what, ex = s.ex;
+  if (q) {
+    const rx = new RegExp("(" + q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+    what = what.replace(rx, "<mark>$1</mark>");
+    ex = ex.replace(rx, "<mark>$1</mark>");
+  }
+  const note = s.note ? `<div class="card-note">※ ${esc(s.note)}${s.url && s.note ? "" : ""}</div>` : "";
+  const link = s.url ? ` · <a href="${esc(s.url)}" target="_blank" rel="noopener" style="color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--ink-faint)">主页 ↗</a>` : "";
+  return `<article class="card" data-platform="${s.p}" data-name="${esc(s.name.toLowerCase())} ${esc(s.cn)} ${esc(s.cat)} ${esc(s.what.replace(/<[^>]+>/g,""))} ${esc(s.ex)}">
+    <div class="card-top">
+      <div class="card-no">${s.no}</div>
+      <div>
+        <div class="card-name">${esc(s.name)}</div>
+        <div class="card-cn">${esc(s.cn)}</div>
+      </div>
+    </div>
+    <div class="card-badges">${badgeHtml}</div>
+    <p class="card-what">${what}</p>
+    <div class="card-example">${ex}</div>
+    <div class="install">
+      <code class="install-cmd">${esc(s.cmd)}</code>
+      <button class="copy-btn" data-copy="${esc(s.cmd)}" aria-label="复制安装命令">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+    ${note ? note : ""}
+    ${link ? `<div class="card-note" style="margin-top:6px">技能${link}</div>` : ""}
+  </article>`;
+}
+
+function renderGroup(container, platform) {
+  const list = SKILLS.filter(s => s.p === platform);
+  const cats = [...new Set(list.map(s => s.cat))];
+  let html = "";
+  for (const cat of cats) {
+    html += `<h3 class="group-title"><span class="gtag ${platform === W ? "wb" : "cx"}">${cat}</span></h3>`;
+    html += `<div class="cards" data-group="${platform}" data-cat="${esc(cat)}"></div>`;
+  }
+  html += `<div class="empty-state"><div class="big">没有匹配的技能</div>换个关键词试试，或清除筛选</div>`;
+  container.innerHTML = html;
+}
+renderGroup(document.getElementById("cards-wb"), W);
+renderGroup(document.getElementById("cards-cx"), C);
+
+/* ============ 搜索 + 平台筛选 ============ */
+const searchEl = document.getElementById("search");
+const chips = document.querySelectorAll("#filterRow .chip");
+let curFilter = "all", curQuery = "";
+
+function haystack(s) {
+  return (s.name + " " + s.cn + " " + s.cat + " " + s.what.replace(/<[^>]+>/g, "") + " " + s.ex + " " + (s.badge || "") + " " + (s.note || "")).toLowerCase();
+}
+
+function applyFilter() {
+  const q = curQuery.trim().toLowerCase();
+  const secWb = document.getElementById("s3");
+  const secCx = document.getElementById("s4");
+  secWb.style.display = (curFilter === "cx") ? "none" : "";
+  secCx.style.display = (curFilter === "wb") ? "none" : "";
+
+  let visible = 0;
+  document.querySelectorAll(".cards").forEach(g => {
+    const platform = g.dataset.group;
+    const cat = g.dataset.cat;
+    const src = SKILLS.filter(s => s.p === platform && s.cat === cat && (!q || haystack(s).includes(q)));
+    g.innerHTML = src.map(s => renderCard(s, q)).join("");
+    visible += src.length;
+    const title = g.previousElementSibling;
+    if (title && title.classList.contains("group-title")) {
+      title.style.display = src.length ? "" : "none";
+    }
+  });
+  document.querySelectorAll(".empty-state").forEach(e => {
+    e.classList.toggle("show", q && visible === 0);
+  });
+}
+applyFilter();
+
+let t;
+searchEl.addEventListener("input", () => {
+  clearTimeout(t);
+  t = setTimeout(() => { curQuery = searchEl.value; applyFilter(); }, 120);
+});
+chips.forEach(c => c.addEventListener("click", () => {
+  chips.forEach(x => x.classList.remove("active"));
+  c.classList.add("active");
+  curFilter = c.dataset.f;
+  applyFilter();
+}));
+
+/* ============ 复制 ============ */
+document.addEventListener("click", e => {
+  const btn = e.target.closest("[data-copy]");
+  if (!btn) return;
+  const text = btn.dataset.copy;
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.innerHTML;
+    btn.classList.add("done");
+    btn.innerHTML = "✓";
+    setTimeout(() => { btn.classList.remove("done"); btn.innerHTML = old; }, 1400);
+  });
+});
+
+/* ============ Scroll-spy ============ */
+const navLinks = document.querySelectorAll("#nav a");
+const sections = [...navLinks].map(a => document.querySelector(a.getAttribute("href")));
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id));
+    }
+  });
+}, { rootMargin: "-15% 0px -70% 0px" });
+sections.forEach(s => spy.observe(s));
+
+/* ============ 回顶 ============ */
+const toTop = document.getElementById("toTop");
+window.addEventListener("scroll", () => {
+  toTop.classList.toggle("show", window.scrollY > 600);
+}, { passive: true });
+toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+/* ============ 移动端抽屉 ============ */
+const menuBtn = document.getElementById("menuBtn");
+const scrim = document.getElementById("scrim");
+menuBtn.addEventListener("click", () => document.body.classList.toggle("nav-open"));
+scrim.addEventListener("click", () => document.body.classList.remove("nav-open"));
+navLinks.forEach(a => a.addEventListener("click", () => document.body.classList.remove("nav-open")));
+</script>
+</body>
+</html>
