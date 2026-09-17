@@ -264,7 +264,25 @@ $skill-installer 看看有哪些技能
 - **来源**：https://github.com/mvanhorn/last30days-skill
 - **安装**：`npx skills add mvanhorn/last30days-skill -g`
 
-### Codex 15 技能速查表
+### （五）编外补充（16）：Karpathy 四原则
+
+#### 16. andrej-karpathy-skills（省 token 的行为指南）
+- **解决什么**：AI 代你做错误假设不假思索地执行；100 行能搞定的事写成 1000 行臃肿架构；改动或删除与自己理解不足、与任务无关的代码。**更少的 diff、更精简的代码 = 更省 token。**
+- **能力**：一个文件立四条规矩，直接治这三种病：
+  1. **编码前思考**——明确说明假设、呈现多种解释、适时提出异议、困惑时停下来问，而不是默默猜；
+  2. **简洁优先**——不加要求之外的功能、不为一次性代码建抽象、不处理不可能发生的场景，200 行能写成 50 行就重写；
+  3. **精准修改**——只碰必须碰的，不「顺手改进」相邻代码，每一行修改都能追溯到用户请求；
+  4. **目标驱动执行**——把指令转成可验证目标：「修复 bug」→「先写重现 bug 的测试，然后让它通过」。
+- **来源**：https://github.com/multica-ai/andrej-karpathy-skills
+- **安装**（按项目，写入 CLAUDE.md / AGENTS.md）：
+  ```bash
+  curl -o CLAUDE.md https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/main/CLAUDE.md
+  ```
+  Claude Code 也可用插件方式：`/plugin marketplace add forrestchang/andrej-karpathy-skills` → `/plugin install andrej-karpathy-skills@karpathy-skills`；Cursor 有对应的 `.cursor/rules` 项目规则。
+- **怎么判断生效**：diff 里不必要的改动变少、因过度复杂而返工的次数变少、澄清问题在实现之前（而非犯错之后）提出。
+- **权衡**：指南倾向谨慎而非速度，琐碎任务（拼写修复、一行小改）自行判断即可。
+
+### Codex 15+1 技能速查表
 
 | # | 技能 | 分类 | 一句话 | 来源 |
 |---|---|---|---|---|
@@ -283,6 +301,7 @@ $skill-installer 看看有哪些技能
 | 13 | playwright | 硬核补充 | 终端自动化真实浏览器 | 官方精选 `$skill-installer playwright` |
 | 14 | cangjie-skill | 压轴 | 书/视频方法论蒸馏成技能包 | [kangarooking/cangjie-skill](https://github.com/kangarooking/cangjie-skill) |
 | 15 | last30days | 压轴 | 近 30 天跨平台真实讨论简报 | [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill) |
+| +1 | andrej-karpathy-skills | 编外补充 | Karpathy 四原则：思考/简洁/精准/目标驱动，更省 token | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) |
 
 ---
 

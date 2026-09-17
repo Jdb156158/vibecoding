@@ -660,7 +660,7 @@ mark {
       <p>用自然语言指挥 AI 编程，你描述想要什么，AI 负责实现。技能（Skill）是能力的放大器——裸的 AI 像两手空空的实习生，装上技能，就是给了他一柜子趁手的工具。</p>
       <div class="hero-stats">
         <div class="stat"><b>2</b><span>平台</span></div>
-        <div class="stat"><b>30</b><span>精选技能</span></div>
+        <div class="stat"><b>31</b><span>精选技能</span></div>
         <div class="stat"><b>7</b><span>避坑要点</span></div>
         <div class="stat"><b>1</b><span>通用标准 SKILL.md</span></div>
       </div>
@@ -711,7 +711,7 @@ mark {
     <!-- 四 -->
     <section id="s4">
       <div class="sec-head"><span class="sec-no">肆</span><h2>Codex · 15 Skill</h2></div>
-      <p class="sec-lead">7 个来自官方精选区，8 个从社区淘来。筛选标准就一条：高频出现，装了确实比裸问 AI 靠谱。</p>
+      <p class="sec-lead">15 个中 7 个来自官方精选区，8 个从社区淘来，外加 1 个编外补充：Karpathy 四原则。筛选标准就一条：高频出现，装了确实比裸问 AI 靠谱。</p>
       <div id="cards-cx"></div>
     </section>
 
@@ -921,6 +921,11 @@ const SKILLS = [
    what:"唯一不写代码的技能：并行搜 Reddit、X、YouTube、Hacker News、Polymarket，按真实互动和真金白银下注排序，合成带引用简报。<b>「Google 聚合的是编辑，last30days 搜索的是人。」</b>",
    ex:"最近 30 天大家怎么看待 Claude Code 4.6？",
    cmd:"npx skills add mvanhorn/last30days-skill -g", url:"https://github.com/mvanhorn/last30days-skill"},
+  {p:C, cat:"编外补充", no:"+1", name:"Karpathy Skills", cn:"andrej-karpathy-skills",
+   what:"源自 Karpathy 对 LLM 编码陷阱的观察，一个文件立四条规矩：<b>编码前思考</b>（不做错误假设）、<b>简洁优先</b>（100 行不写成 1000 行）、<b>精准修改</b>（只碰该碰的）、<b>目标驱动执行</b>（先定验证标准）。更少的 diff、更精简的代码 = <b>更省 token</b>。",
+   ex:"修复 bug → 先写重现 bug 的测试，然后让它通过。",
+   cmd:"curl -o CLAUDE.md https://raw.githubusercontent.com/forrestchang/andrej-karpathy-skills/main/CLAUDE.md", url:"https://github.com/multica-ai/andrej-karpathy-skills",
+   note:"Claude Code 可用插件安装；Cursor 有对应 .cursor/rules 规则"},
 ];
 
 /* ============ 渲染 ============ */
