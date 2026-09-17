@@ -5,6 +5,8 @@ Vibe Coding 指南 —— WorkBuddy × Codex 双平台技能装备库。
 > **🌐 在线工作台**：<https://jdb156158.github.io/vibecoding/>
 > 单文件网页版，支持目录导航、关键词搜索、平台筛选、安装命令一键复制。
 
+![Vibe Coding 工作台预览](assets/workbench-preview.png)
+
 ## 内容
 
 | 章节 | 说明 |
