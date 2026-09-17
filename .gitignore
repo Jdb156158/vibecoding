@@ -1,0 +1,6 @@
+# macOS AppleDouble 资源分叉（非代码，自动生成）
+._*
+
+# 旧打包文件
+*.zip
+.workbuddy/
