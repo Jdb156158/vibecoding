@@ -582,47 +582,29 @@ mark {
 .to-top:hover { color: var(--accent); border-color: var(--accent); }
 .to-top svg { width: 16px; height: 16px; }
 
-/* 移动端抽屉 */
-.menu-btn {
-  display: none;
-  position: fixed;
-  top: 14px; left: 14px;
-  z-index: 60;
-  width: 40px; height: 40px;
-  border-radius: 11px;
-  border: 1px solid var(--line);
-  background: rgba(253, 251, 247, 0.9);
-  backdrop-filter: blur(10px);
-  place-items: center;
-  cursor: pointer;
-  color: var(--ink);
-}
-.menu-btn svg { width: 17px; height: 17px; }
-.scrim {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(46, 38, 34, 0.18);
-  z-index: 55;
-}
-
+/* 窄屏适配：侧栏常驻左侧，仅收窄 */
 @media (max-width: 920px) {
-  .app { grid-template-columns: 1fr; }
-  .menu-btn { display: grid; }
-  .sidebar {
-    position: fixed;
-    left: 0; top: 0; bottom: 0;
-    width: min(300px, 84vw);
-    z-index: 58;
-    transform: translateX(-102%);
-    transition: transform 0.4s var(--ease);
-    box-shadow: none;
-  }
-  body.nav-open .sidebar { transform: none; }
-  body.nav-open .scrim { display: block; }
-  .main { padding-top: 74px; }
+  :root { --sidebar-w: 218px; }
+  .sidebar { padding: 20px 14px 16px; }
+  .brand-mark { font-size: 21px; }
+  .nav a { font-size: 12.5px; padding: 5px 8px; }
+  .nav a .num { width: 18px; font-size: 11px; }
+  .main { padding: 44px 24px 70px; }
   .routes { grid-template-columns: 1fr; }
   .card-badges, .card-what, .card-example, .install, .card-note { margin-left: 0; }
   .card-top { margin-bottom: 8px; }
+}
+
+@media (max-width: 560px) {
+  :root { --sidebar-w: 168px; }
+  .sidebar { padding: 16px 10px 12px; }
+  .search-wrap { display: none; }
+  .filter-row { flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .nav-label { display: none; }
+  .side-foot { display: none; }
+  .main { padding: 36px 16px 60px; }
+  .hero-stats { gap: 8px; }
+  .stat { padding: 8px 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -632,11 +614,6 @@ mark {
 </style>
 </head>
 <body>
-
-<div class="menu-btn" id="menuBtn" aria-label="打开目录">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
-</div>
-<div class="scrim" id="scrim"></div>
 
 <div class="app">
 
@@ -1083,13 +1060,6 @@ window.addEventListener("scroll", () => {
   toTop.classList.toggle("show", window.scrollY > 600);
 }, { passive: true });
 toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-
-/* ============ 移动端抽屉 ============ */
-const menuBtn = document.getElementById("menuBtn");
-const scrim = document.getElementById("scrim");
-menuBtn.addEventListener("click", () => document.body.classList.toggle("nav-open"));
-scrim.addEventListener("click", () => document.body.classList.remove("nav-open"));
-navLinks.forEach(a => a.addEventListener("click", () => document.body.classList.remove("nav-open")));
 </script>
 </body>
 </html>
